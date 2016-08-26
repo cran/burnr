@@ -6,7 +6,7 @@
 
 Basic tools to analyze forest fire history data (e.g. FHX2) in R. This is designed for power users and projects with special needs.
 
-The project is under heavy development as I try to wrap things up into a CRAN package. Hic sunt dracones.
+The project is under heavy development. Hic sunt dracones.
 
 ## A quick example
 
@@ -47,7 +47,7 @@ devtools::install_github("ltrr-arizona-edu/burnr")
 
 ## Support
 
-Documentation is included in the code. More information can be found on the [project's wiki](https://github.com/ltrr-arizona-edu/burnr/wiki). Note, this is still under construction.
+Documentation is included in the code. If you're new to burnr, we have an [introduction](https://cran.r-project.org/web/packages/burnr/vignettes/introduction.html). And more information can be found on the [project's wiki](https://github.com/ltrr-arizona-edu/burnr/wiki). Note, this is still under construction.
 
 ## Development
 

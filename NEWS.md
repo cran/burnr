@@ -1,3 +1,13 @@
+# burnr v0.1.1
+
+Changes in this patch:
+
+* Added option to sort series by their last (or most recent) year with `sort()`.
+
+* Updated `run_sea()` to better replicate EVENT Fortran program. Addresses #58. Added detailed description and an example page with graphics. Also fixed issue with percentage CIs in the departure table. Mind you, `run_sea()` is still super experimental.
+
+* Several minor changes to documentation and meta data.
+
 # burnr v0.1.0
 
 Changes in this minor release:

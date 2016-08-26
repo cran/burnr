@@ -2,14 +2,17 @@
 % Please edit documentation in R/utils.R
 \name{sort.fhx}
 \alias{sort.fhx}
-\title{Sort the series names of fhx object by earliest year.}
+\title{Sort the series names of fhx object by the earliest or latest year.}
 \usage{
-\method{sort}{fhx}(x, decreasing = FALSE, ...)
+\method{sort}{fhx}(x, decreasing = FALSE, sort_by = c("first_year",
+  "last_year"), ...)
 }
 \arguments{
 \item{x}{An fhx instance to be sorted.}
 
 \item{decreasing}{Logical. Decreasing sorting? Defaults to FALSE.}
+
+\item{sort_by}{Designate the inner or outer year for sorting. Defaults to "first_year"}
 
 \item{...}{Additional arguments that fall off the face of the universe.}
 }
@@ -17,11 +20,12 @@
 A copy of \code{x} with reordered series.
 }
 \description{
-Sort the series names of fhx object by earliest year.
+Sort the series names of fhx object by the earliest or latest year.
 }
 \examples{
 data(lgr2)
 plot(sort(lgr2, decreasing = TRUE))
+plot(sort(lgr2, sort_by = "last_year"))
 
 }
 
