@@ -1,3 +1,17 @@
+# burnr v0.1.2
+
+Changes in this patch:
+
+* Fixed additional bug in `read_fhx()` caused by "FHX2 format" in FHX file header.
+
+* Fixed bug #71, causing `read_fhx()` to fail when FHX has empty lastline.
+
+* Added `text` option to `read_fhx()`.
+
+* Corrected error message for `series` arg in `fhx()`. Fixes #73.
+
+* Fixed write_fhx() reversing order of series names in output file.
+
 # burnr v0.1.1
 
 Changes in this patch:

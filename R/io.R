@@ -2,6 +2,8 @@
 #'
 #' @param fname Name of target FHX file. Needs to be in format version 2.
 #' @param encoding Encoding to use when reading the FHX file. The default is to use the system.
+#' @param text Character string. If \code{fname} is not provided and 
+#'   \code{text} is, then data is read from \code{text} using a text connection.
 #'
 #' @return An \code{fhx} object.
 #'
@@ -11,17 +13,24 @@
 #' }
 #'
 #' @export
-read_fhx <- function(fname, encoding=getOption("encoding")) {
-  con <- file(fname, encoding = encoding)
-  on.exit(close(con))
+read_fhx <- function(fname, encoding, text) {
+  if (missing(encoding))
+    encoding <- getOption('encoding')
+  if (missing(fname) && !missing(text)) {
+    con <- textConnection(text)
+    on.exit(close(con))
+  }
+  if (!missing(fname)) {
+    con <- file(fname, encoding = encoding)
+    on.exit(close(con))
+  }
   # Error checking and basic variables.
   if (length(readLines(con, n = 1)) == 0)
     stop("file appears to be empty")
   fl <- readLines(con, warn = FALSE)
-  if (!any(suppressWarnings(grepl("FHX2 FORMAT|FIRE2 FORMAT", fl, ignore.case = TRUE))))
+  if (!any(suppressWarnings(grepl("^FHX2 FORMAT|^FIRE2 FORMAT", fl, ignore.case = TRUE))))
     stop("Cannot find line 'FHX2 FORMAT' or 'FIRE2 FORMAT'.")
-
-  first <- suppressWarnings(grep("FHX2 FORMAT|FIRE2 FORMAT", fl, ignore.case = TRUE))
+  first <- suppressWarnings(grep("^FHX2 FORMAT|^FIRE2 FORMAT", fl, ignore.case = TRUE))
   describe <- as.numeric(strsplit(fl[[first + 1]], " ")[[1]])
   if (length(describe) != 3) {  # First year; no. sites; length of site id.
     stop(paste("Three-digit descriptive information that should be on line ",
@@ -83,7 +92,7 @@ read_fhx <- function(fname, encoding=getOption("encoding")) {
   names(fl_body) <- series_names
   fl_body$year <- seq(first_year, first_year + dim(fl_body)[1] - 1)
   fl_body_melt <- reshape2::melt(fl_body, id.vars = "year", value.name = "rec_type",
-                       variable.name = "series")
+                       variable.name = "series", na.rm = TRUE)
   fl_body_melt <- fl_body_melt[fl_body_melt$rec_type != '.', ]
   fl_body_melt$rec_type <- vapply(fl_body_melt$rec_type, function(x) type_key[[x]], "a") 
   fl_body_melt$rec_type <- factor(fl_body_melt$rec_type,
@@ -146,7 +155,7 @@ write_fhx <- function(x, fname="") {
   # Weird thing to move year to the last column of the data.frame:
   out$yr <- out$year
   out$year <- NULL
-  series_names <- rev(as.character(unique(x$series)))
+  series_names <- as.character(unique(x$series))
   no_series <- length(series_names)
   max_series_name_length <- max(sapply(series_names, nchar))
   head_line <- "FHX2 FORMAT"
