@@ -1,3 +1,28 @@
+# burnr v0.2.0
+
+Changes in this minor release:
+
+* Renamed `run_sea()` to `sea()` and enhanced speed, and changed the `time_span` parameter to `event_range', `key` argument is now `event`, and `years_before` and `years_after` are now `nbefore` and `nafter`, respectively. The function now returns a proper sea object with special `plot()` and `print()` methods. The `plot()` generic method uses the new `plot_sealags()`. You can still use the old `run_sea()`, but it is deprecated and will be removed in future releases. We're happy with the general interfaces to `sea()` but it's guts and internal structure may change over the next few minor releases, so beware.
+
+* Added `intervals()` to handle interval analysis. These are a whole new object. `mean_interval()` has been renamed `series_mean_interval()` to avoid confusion. We also have a generic `plot()` function that uses `plot_intervals_dist()`. It plots a little histogram with a rug along the x-axis.
+
+* Added `pgm_pdsi` data to run with sea. Load it with `data("pgm_pdsi")`.
+
+* Added `make_rec_type()`. I hope this will make it easier to create `rec_type` factors used by `fhx()`.
+
+* Added `event_count_position()`, which gives the number of events found in different positions or seasons.
+
+* Added `year_range()` to give (min, max) years for an `fhx` object.
+
+* Updated `composite()` to include a filter for number of events. This necesitates fixes in other functions (e.g. `plot_demograph()`).
+
+* Added `summary()` function for fhx and intervals objects.
+
+* `count_fire()` renamed `count_scar()`
+
+* Added `quantile()` function for intervals.
+
+
 # burnr v0.1.2
 
 Changes in this patch:

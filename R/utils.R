@@ -8,14 +8,38 @@
 #' @return An fhx instance.
 #'
 #' @export
-fhx <- function(year,  series, rec_type, metalist=list()) {
+fhx <- function(year, series, rec_type, metalist=list()) {
   if (!is.numeric(year)) stop("year must be numeric")
   if (!is.factor(series)) stop("series must be factor")
-  if (!is.factor(rec_type)) stop("rec_type must be factor")
   if (!is.list(metalist)) stop("metalist must be list")
+  rec_type <- make_rec_type(rec_type)
   ringsdf = data.frame(year = year, series = series, rec_type = rec_type)
   class(ringsdf) <- c('fhx', 'data.frame')
   ringsdf
+}
+
+#' Turn character vector into factor with proper fhx levels.
+#'
+#' @param x A character vector containing one or more rec_type-like strings.
+#'
+#' @return A factor with appropriate fhx levels.
+#'
+#' @examples
+#' make_rec_type('null_year')
+#'
+#' make_rec_type(c('null_year', 'late_fs'))
+#'
+#' @export
+make_rec_type <- function(x) {
+  possible_levels = c("null_year", "recorder_year", "unknown_fs",
+           "unknown_fi", "dormant_fs", "dormant_fi",
+           "early_fs", "early_fi", "middle_fs",
+           "middle_fi", "late_fs", "late_fi",
+           "latewd_fs", "latewd_fi", "pith_year",
+           "bark_year", "inner_year", "outer_year",
+           "estimate")
+  stopifnot(x %in% possible_levels)  # TODO(brews): This could be make into a more clear error.
+  factor(x, levels = possible_levels)
 }
 
 #' Get years with events for an fhx object.
@@ -64,6 +88,23 @@ get_event_years <- function(x, scar_event=TRUE, injury_event=FALSE, custom_grep_
     search_str <- custom_grep_str
   }
   plyr::dlply(x, c('series'), function(a) a$year[grepl(search_str, a$rec_type)])
+}
+
+#' Range of years for \code{fhx} object.
+#'
+#' @param x An fhx object.
+#'
+#' @return An integer vector or \code{NULL}.
+#'
+#'
+#' @examples
+#' data(lgr2)
+#' year_range(lgr2)
+#'
+#' @export
+year_range <- function(x) {
+  stopifnot(is.fhx(x))
+  range(x$year)
 }
 
 #' Get \code{fhx} series names.
@@ -214,6 +255,54 @@ find_recording <- function(x, injury_event) {
   data.frame(recording = union(rec, active))
 }
 
+#' Count of different events
+#'
+#' @param x An fhx object.
+#' @param injury_event Optional boolean indicating whether injuries should be considered event. Default is FALSE.
+#' @param position Optional character vector giving the types of event positions to include in the count. Can any combination of the following: "unknown", "dormant", "early", "middle", "late", "latewd". The default counts all event positions.
+#' @param groupby Optional named list containing character vectors that are used to count the total number of different event types. The names given to each character vector give the group's name in the output data.frame.
+#'
+#' @return A data.frame with a columns giving the event and corresponding number of events for each event type.
+#'
+#' @examples
+#' data(pgm)
+#' count_event_position(pgm)
+#'
+#' # As above, but considering injuries to be a type of event.
+#' count_event_position(pgm, injury_event = TRUE)
+#'
+#' # Count only events of a certain position, in this case, "unknown", "early", and "middle".
+#' count_event_position(pgm, injury_event = TRUE, position = c("unknown", "early", "middle"))
+#'
+#' # Using custom `groupby` args.
+#' grplist <- list(foo = c("dormant_fs", "early_fs"), bar = c("middle_fs", "late_fs"))
+#' count_event_position(pgm, groupby = grplist)
+#'
+#' @export
+count_event_position <- function(x, injury_event=FALSE, position, groupby) {
+  stopifnot(is.fhx(x))
+
+  possible_position = c("unknown", "dormant", "early", "middle", "late", "latewd")
+  if (missing(position))
+    position <- possible_position
+  stopifnot(all(position %in% possible_position))
+
+  target_events <- paste0(position, "_fs")
+  all_events <- paste0(possible_position, "_fs")
+  if (injury_event == TRUE)
+    target_events <- c(target_events, paste0(position, "_fi"))
+
+  msk <- x$rec_type %in% target_events
+
+  out <- plyr::count(x$rec_type[msk])
+  names(out) <- c("event", "count")
+  if (!missing(groupby)) {
+    outgroup <- plyr::ldply(groupby, function(g) sum(subset(out, out$event %in% g)$count))
+    names(outgroup) <- c("event", "count")
+    out <- rbind(out, outgroup)
+  }
+  out
+}
 
 #' Count the number of recording series for each year in an fhx object.
 #'
@@ -237,7 +326,8 @@ yearly_recording <- function(x, injury_event=FALSE) {
 #'
 #' @param x An fhx instance.
 #' @param filter_prop The proportion of fire events to recording series needed in order to be considered. Default is 0.25.
-#' @param filter_min The minimum number of recording series needed to be considered a fire event. Default is 2 recording series.
+#' @param filter_min_rec The minimum number of recording series needed to be considered a fire event. Default is 2 recording series.
+#' @param filter_min_events The minimum number of fire scars needed to be considered a fire event. Default is 1. This includes injuries if injury_event=TRUE.
 #' @param injury_event Boolean indicating whether injuries should be considered events. Default is FALSE.
 #' @param comp_name Character vector of the series name for the returned fhx object composite series. Default is 'COMP'.
 #'
@@ -253,7 +343,7 @@ yearly_recording <- function(x, injury_event=FALSE) {
 #' print(event_yrs)
 #'
 #' @export
-composite <- function(x, filter_prop=0.25, filter_min=2, injury_event=FALSE, comp_name='COMP') {
+composite <- function(x, filter_prop=0.25, filter_min_rec=2, filter_min_events = 1, injury_event=FALSE, comp_name='COMP') {
   stopifnot(is.fhx(x))
   injury <- list("u" = "unknown_fi",
                  "d" = "dormant_fi",
@@ -281,7 +371,7 @@ composite <- function(x, filter_prop=0.25, filter_min=2, injury_event=FALSE, com
   counts <- merge(event_count, recording_count,
                   by = 'year', suffixes = c('_event', '_recording'))
   counts$prop <- counts$Freq_event / counts$Freq_recording
-  filter_mask <- (counts$prop >= filter_prop) & (counts$Freq_recording >= filter_min)
+  filter_mask <- (counts$prop >= filter_prop) & (counts$Freq_recording >= filter_min_rec) & (counts$Freq_event >= filter_min_events)
   out <- subset(counts, filter_mask)$year
   composite_event_years <- as.integer(levels(out)[out])
   # Make composite events unknown firescars.
@@ -313,7 +403,7 @@ composite <- function(x, filter_prop=0.25, filter_min=2, injury_event=FALSE, com
 #' Sort the series names of fhx object by the earliest or latest year.
 #'
 #' @param x An fhx instance to be sorted.
-#' @param sort_by Designate the inner or outer year for sorting. Defaults to "first_year"
+#' @param sort_by Either 'first_year' or 'last_year'. Designates the inner or outer year for sorting. Defaults to 'first_year'
 #' @param decreasing Logical. Decreasing sorting? Defaults to FALSE.
 #' @param ... Additional arguments that fall off the face of the universe.
 #'
@@ -325,9 +415,9 @@ composite <- function(x, filter_prop=0.25, filter_min=2, injury_event=FALSE, com
 #' plot(sort(lgr2, sort_by = "last_year"))
 #'
 #' @export
-sort.fhx <- function(x, decreasing=FALSE, sort_by = c('first_year', 'last_year'), ...) {
+sort.fhx <- function(x, decreasing=FALSE, sort_by = 'first_year', ...) {
   stopifnot(is.fhx(x))
-
+  stopifnot(sort_by %in% c("first_year", "last_year"))
   if (is.null(sort_by)) sort.order <- min
   if (sort_by == "first_year") sort.order <- min
   if (sort_by == "last_year") sort.order <- max
@@ -391,11 +481,10 @@ is.fhx <- function(x) {
 check_duplicates <- function(x) {
   stopifnot(is.fhx(x))
   if (!anyDuplicated(x)) {
-    return(x)
+    return(invisible(x))
   } else {
       duplicates <- x[duplicated(x), ]
-      print(duplicates)
-      stop(c(dim(duplicates)[1],
+      stop(duplicates, "\n", c(dim(duplicates)[1],
            " duplicate(s) found. Please resolve duplicate records."))
   }
 }

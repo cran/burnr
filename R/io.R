@@ -39,7 +39,7 @@ read_fhx <- function(fname, encoding, text) {
   }
   # TODO: Need error check that row length = describe[2] + year.
   # TODO: Need error check that first year in body is first year in meta.
-  
+
   type_key <- list("?" = "estimate",  # My own creation for estimated years to pith.
                    "." = "null_year",
                    "|" = "recorder_year",
@@ -94,7 +94,7 @@ read_fhx <- function(fname, encoding, text) {
   fl_body_melt <- reshape2::melt(fl_body, id.vars = "year", value.name = "rec_type",
                        variable.name = "series", na.rm = TRUE)
   fl_body_melt <- fl_body_melt[fl_body_melt$rec_type != '.', ]
-  fl_body_melt$rec_type <- vapply(fl_body_melt$rec_type, function(x) type_key[[x]], "a") 
+  fl_body_melt$rec_type <- vapply(fl_body_melt$rec_type, function(x) type_key[[x]], "a")
   fl_body_melt$rec_type <- factor(fl_body_melt$rec_type,
                               levels = c("null_year", "recorder_year", "unknown_fs",
                                          "unknown_fi", "dormant_fs", "dormant_fi",
@@ -107,44 +107,37 @@ read_fhx <- function(fname, encoding, text) {
            rec_type = fl_body_melt$rec_type)
 }
 
-#' Write an fhx object to a new FHX2 file.
+#' List of character strings to write to FHX file.
 #'
 #' @param x An fhx object.
-#' @param fname Output filename.
 #'
-#' @examples
-#' \dontrun{
-#' data(lgr2)
-#' write_fhx(lgr2, 'afile.fhx')
-#' }
+#' @return A list with four members containing vectors: "head_line", 
+#'     "subhead_line", "series_heading", and "body". Each refering 
+#'     to a portion of an FHX file that the strings are dumped into.
 #'
-#' @export
-write_fhx <- function(x, fname="") {
-  if ( fname == "" ) {
-    stop('Please specify a character string naming a file or connection open
-          for writing.')
-  }
+#' @seealso write_fhx
+list_filestrings <- function(x) {
   stopifnot(is.fhx(x))
-  type_key <- list("null_year"    = ".", 
-                   "recorder_year"= "|", 
-                   "unknown_fs"   = "U", 
-                   "unknown_fi"   = "u", 
-                   "dormant_fs"   = "D", 
-                   "dormant_fi"   = "d", 
-                   "early_fs"     = "E", 
-                   "early_fi"     = "e", 
-                   "middle_fs"    = "M", 
-                   "middle_fi"    = "m", 
-                   "late_fs"      = "L", 
-                   "late_fi"      = "l", 
-                   "latewd_fs"    = "A", 
-                   "latewd_fi"    = "a", 
-                   "pith_year"    = "[", 
-                   "bark_year"    = "]", 
-                   "inner_year"   = "{", 
+  type_key <- list("null_year"    = ".",
+                   "recorder_year"= "|",
+                   "unknown_fs"   = "U",
+                   "unknown_fi"   = "u",
+                   "dormant_fs"   = "D",
+                   "dormant_fi"   = "d",
+                   "early_fs"     = "E",
+                   "early_fi"     = "e",
+                   "middle_fs"    = "M",
+                   "middle_fi"    = "m",
+                   "late_fs"      = "L",
+                   "late_fi"      = "l",
+                   "latewd_fs"    = "A",
+                   "latewd_fi"    = "a",
+                   "pith_year"    = "[",
+                   "bark_year"    = "]",
+                   "inner_year"   = "{",
                    "outer_year"   = "}")
   out <- x
-  out$rec_type <- vapply(out$rec_type, function(x) type_key[[x]], "a") 
+  out$rec_type <- vapply(out$rec_type, function(x) type_key[[x]], "a")
   year_range <- seq(min(out$year), max(out$year))
   filler <- data.frame(year = year_range,
                        series = rep("hackishSolution", length(year_range)),
@@ -167,16 +160,39 @@ write_fhx <- function(x, fname="") {
     n <- length(ingoing)
     series_heading[1:n, i] <- ingoing
   }
-  # Now we quickly open and write to the file.
+  list('head_line' = head_line,
+       'subhead_line' = subhead_line,
+       'series_heading' = series_heading,
+       'body' = out)
+}
+
+#' Write an fhx object to a new FHX2 file.
+#'
+#' @param x An fhx object.
+#' @param fname Output filename.
+#'
+#' @examples
+#' \dontrun{
+#' data(lgr2)
+#' write_fhx(lgr2, 'afile.fhx')
+#' }
+#'
+#' @export
+write_fhx <- function(x, fname="") {
+  if ( fname == "" ) {
+    stop('Please specify a character string naming a file or connection open
+          for writing.')
+  }
+  d <- list_filestrings(x)
   fl <- file(fname, open = "wt")
-  cat(paste(head_line, "\n", subhead_line, "\n", sep = ""),
+  cat(paste(d[['head_line']], "\n", d[['subhead_line']], "\n", sep = ""),
       file = fl, sep = "")
-  utils::write.table(series_heading, fl,
+  utils::write.table(d[['series_heading']], fl,
                      append = TRUE, quote = FALSE,
                      sep = "", na = "!",
                      row.names = FALSE, col.names = FALSE)
   cat("\n", file = fl, sep = "", append = TRUE)
-  utils::write.table(out, fl, 
+  utils::write.table(d[['body']], fl,
                      append = TRUE, quote = FALSE,
                      sep = "", na = "!",
                      row.names = FALSE, col.names = FALSE)

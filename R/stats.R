@@ -13,16 +13,16 @@
 #'
 #' # You can create your own list of statistics to output. You can also create
 #' # your own functions:
-# ' flist <- list(n = count_year_span,
-# '               xbar_interval = function(x) mean_interval(x, injury_event = TRUE))
+#' flist <- list(n = count_year_span,
+#'               xbar_interval = function(x) mean_interval(x, injury_event = TRUE))
 #' sstats <- series_stats(lgr2)
 #' head(sstats)
 #'
 #' @export
 series_stats <- function(x, func_list=list(first=first_year,last=last_year,
   years=count_year_span,inner_type=inner_type,outer_type=outer_type,
-  number_fires=count_fire,number_injuries=count_injury,
-  recording_years=count_recording,mean_interval=mean_interval)) {
+  number_scars=count_scar,number_injuries=count_injury,
+  recording_years=count_recording,mean_interval=series_mean_interval)) {
   stopifnot(is.fhx(x))
   plyr::ddply(x, c('series'), function(df) data.frame(lapply(func_list, function(f) f(df))))
 }
@@ -82,14 +82,14 @@ inner_type <- function(x) {
   x$rec_type[which.min(x$year)]
 }
 
-#' Number of fire events in an fhx series.
+#' Number of scar events in an fhx series.
 #'
 #' @param x An fhx object.
 #'
 #' @return The number of fire events observed in the series.
 #'
 #' @export
-count_fire <- function(x) {
+count_scar <- function(x) {
   length(grep('_fs', x$rec_type))
 }
 
@@ -116,15 +116,16 @@ count_recording <- function(x, injury_event=FALSE) {
   nrow(find_recording(x, injury_event = injury_event))
 }
 
-#' Calculate mean fire interval of an fhx series.
+#' Calculate mean fire interval of a single fhx series.
 #'
-#' @param x An fhx object.
+#' @param x An fhx object with a single series. For proper fire intervals see `intervals()`.
 #' @param injury_event Boolean indicating whether injuries should be considered event.
 #'
 #' @return The mean fire interval observed in the series.
+#' @seealso intervals()
 #'
 #' @export
-mean_interval <- function(x, injury_event=FALSE) {
+series_mean_interval <- function(x, injury_event=FALSE) {
   search_str <- '_fs'
   if (injury_event) {
     search_str <- paste0('_fi|', search_str)
@@ -138,210 +139,6 @@ mean_interval <- function(x, injury_event=FALSE) {
   out
 }
 
-#' Perform superposed epoch analysis.
-#'
-#'
-#' @param x A data.frame climate reconstruction or tree-ring series with row names as years.
-#' @param key A vector of event years for superposed epoch, such as fire years, or an fhx object
-#' with a single \code{series} as produced by \code{composite}
-#' @param years_before  The number of lag years prior to the event year
-#' @param years_after The number of lag years following the event year
-#' @param time_span The length of the x time series to use. Defaults to "key_period"
-#' which constrains the time series to the time period of key events; "all" will use the entire
-#' time series
-#' @param n_iter The number of iterations for bootstrap resampling
-#'
-#' @details Superposed epoch analysis (SEA) helps to evaluate fire-climate
-#' relationships in studies of tree-ring fire history. It works by compositing the values of
-#' an anual timeseries or climate reconstruction for the fire years provided (\code{key}) and both positive and
-#' negative lag years. Bootstrap resampling of the timeseries is performed to evaluate the statistical
-#' significance of each year's mean value. Users interpret the departure of the actual event year
-#' means from the simulated event year means.
-#'
-#' The significance of lag-year departures from the average climate condition was first noted by
-#' Baisan and Swetnam (1990) and used in an organized SEA by Swetnam (1993). Since then, the procedure
-#' has been commonly applied in fire history studies. The FORTRAN program EVENT.exe was written by
-#' Richard Holmes and Thomas Swetnam (Holmes and Swetnam 1994) to perform SEA for fire history
-#' specifically. EVENT was incorporated in the FHX2 software by Henri Grissino-Mayer.
-#'
-#' run_sea was designed to replicate EVENT as closely as possible. We have tried to stay true to their implementation of
-#' SEA, although multiple versions of the analysis exist in the climate literature and for fire
-#' history (e.g., FHAES implements a diferent procedure). The outcome of EVENT and run_sea should
-#' only differ slightly in the values of the simulated events and the departures, because random
-#' draws are used. The event year and lag significance levels should match, at least in the general
-#' pattern.
-#'
-#' We note that our implementation of run_sea borrows from the \code{dplR:::sea} function in how it performs
-#' the bootstrap procedure, but differs in the kind of output provided for the user.
-#'
-#' @return A list of three data frames, following the output of EVENT.
-#' (1) the actual events table, (2) the simulated events table, and (3) departures of actual from simulated
-#'
-#' @references Baisan and Swetnam 1990, Fire history on desert mountain range: Rincon Mountain Wilderness, Arizona, U.S.A. Canadian Journal of Forest Research 20:1559-1569.
-#' @references Bunn 2008, A dendrochronology program library in R (dplR), Dendrochronologia 26:115-124
-#' @references Holmes and Swetnam 1994, EVENT program desription
-#' @references Swetnam 1993, Fire history and climate change in giant sequoia groves, Science 262:885-889.
-#'
-#' @examples
-#' \dontrun{
-#' # Read in the Cook and Krusic (2004; The North American Drought Atlas) reconstruction
-#' # of Palmer Drought Severity Index (PDSI) for the Jemez Mountains area (gridpoint 133).
-#' target_url <- paste0('http://iridl.ldeo.columbia.edu',
-#'                      '/SOURCES/.LDEO/.TRL/.NADA2004'
-#'                      '/pdsiatlashtml/pdsiwebdata/1050w_350n_133.txt')
-#' pdsi <- read.table(target_url, header = TRUE, row.names = 1)
-#' pdsi <- subset(pdsi, select = "RECON")
-#'
-#' # Run SEA on Peggy Mesa (pgm) data
-#' data(pgm)
-#' (pgm.comp <- composite(pgm))
-#'
-#' (pgm.sea <- run_sea(pdsi, pgm.comp))
-#'
-#' # Make a bargraph with confidence intervals
-#' par(mar=c(2, 3, 1, 1), oma=c(3, 3, 1, 1))
-#' bp <- barplot(pgm.sea[[3]]$mean_value,
-#'               col=c(rep("grey75", 3),"grey45", "grey30",
-#'                     "grey75", "grey30", rep("grey75", 4)),
-#'               ylab = '', las=1, cex.axis=1.3, cex=1.3, ylim=c(-2, 2))
-#' axis(1, at=bp, labels = -6:4, tick=FALSE, cex.axis=1.3)
-#' lines(bp, pgm.sea[[3]]$lower_95_perc, lwd=2, lty=2)
-#' lines(bp, pgm.sea[[3]]$upper_95_perc, lwd=2, lty=2)
-#' lines(bp, pgm.sea[[3]]$lower_99_perc, lwd=2, lty=3)
-#' lines(bp, pgm.sea[[3]]$upper_99_perc, lwd=2, lty=3)
-#' mtext(expression(bold('PDSI departure')), side=2, line=2.2, cex=1.5)
-#' mtext(expression(bold('Lag year')), side=1, line=3.3, cex=1.5)
-#' }
-#' \dontrun{
-#' # For users who want to perform SEA very near to EVENT.exe and/or have reproducable draws from
-#' # the bootstrap procedure, consider including the \code{set.seed} function prior to \code{run_sea}.
-#' # Convention is to provide a long integer, such as a birthday (e.g. 3191982).
-#' # In the EVENT.exe program, Richard Holmes used the number of days since 1 January 1935.
-#' days <- as.numeric(Sys.Date() - as.Date("1jan1935", "%d%b%Y"))
-#' set.seed(days)
-#' }
-#'
-#' @export
-run_sea <- function(x, key, years_before=6, years_after=4,
-                    time_span=c('key_period'), n_iter=1000) {
-
-  message('run_sea(): This function is under development and will likely change in the future.')
-
-  if (is.fhx(key)){
-   if (length(unique(key$series)) > 1) stop("key must have a single series")
-    else key <- get_event_years(key)[[1]]
-  }
-
-  # set up
-  period <- range(key)
-  rnames <- as.numeric(rownames(x))
-  rnames.cut <- rnames[period[1] : period[2]]
-  n <- length(key)
-  seq.n <- seq_len(n)
-  m <- years_before + years_after + 1
-  yrs.base <- -years_before:years_after
-  out_table <- data.frame(matrix(NA_real_, nrow=m, ncol=16,
-                                 dimnames=list(1:m, c('lag_year', 'mean_value',
-                                                      'n_values', 'St_dev', 'lower_95',
-                                                      'upper_95', 'lower_99', 'upper_99',
-                                                      'lower_99.9', 'upper_99.9', 'lower_95_perc',
-                                                      'upper_95_perc', 'lower_99_perc', 'upper_99_perc',
-                                                      'min_value', 'max_value'))))
-  out_table[, 1] <- yrs.base
-
-  # key-event matrix
-  event.table <- matrix(NA_real_, ncol = m, nrow = n)
-  for (i in seq.n) {
-    yrs <- as.character(key[i] + yrs.base)
-    event.table[i, ] <- x[yrs, ]
-  }
-
-  key_event_table <- out_table[, -c(11:14)]
-  key_event_table[, 2] <- colMeans(event.table, na.rm=TRUE)
-  key_event_table[, 3] <- apply(event.table, 2, function(x) sum(!is.na(x)))
-  key_event_table[, 4] <- apply(event.table, 2, stats::sd, na.rm=TRUE)
-  key_event_table[, 5] <- apply(event.table, 2, function(x) mean(x) - 1.960*stats::sd(x, na.rm=TRUE))
-  key_event_table[, 6] <- apply(event.table, 2, function(x) mean(x) + 1.960*stats::sd(x, na.rm=TRUE))
-  key_event_table[, 7] <- apply(event.table, 2, function(x) mean(x) - 2.575*stats::sd(x, na.rm=TRUE))
-  key_event_table[, 8] <- apply(event.table, 2, function(x) mean(x) + 2.575*stats::sd(x, na.rm=TRUE))
-  key_event_table[, 9] <- apply(event.table, 2, function(x) mean(x) - 3.294*stats::sd(x, na.rm=TRUE))
-  key_event_table[, 10] <- apply(event.table, 2, function(x) mean(x) + 3.294*stats::sd(x, na.rm=TRUE))
-  key_event_table[, 11] <- apply(event.table, 2, min, na.rm=TRUE)
-  key_event_table[, 12] <- apply(event.table, 2, max, na.rm=TRUE)
-  key_event_table <- round(key_event_table, 3)
-
-  # random event matrix
-  re.table <- matrix(NA_real_, ncol = m, nrow = n_iter)
-  re.subtable <- matrix(NA_real_, ncol = m, nrow = n)
-  if(time_span == "key_period"){
-    rand_yrs <- rnames.cut
-  }
-  else {
-    rand_yrs <- rnames
-  }
-
-  rand_pick <- matrix(sample(rand_yrs, n * n_iter, replace=TRUE),
-                      ncol=n_iter, nrow=n, byrow=FALSE)
-
-  for (k in 1:ncol(rand_pick)) {
-    for(i in 1:nrow(rand_pick)) {
-      yrs <- as.character(rand_pick[i, k] + yrs.base)
-      re.subtable[i, ] <- x[yrs, ]
-    }
-    re.table[k, ] <- colMeans(re.subtable, na.rm = TRUE)
-  }
-
-  rand_event_table <- out_table
-  rand_event_table[, 2] <- colMeans(re.table, na.rm=TRUE)
-  rand_event_table[, 3] <- apply(re.table, 2, function(x) sum(!is.na(x)))
-  rand_event_table[, 4] <- apply(re.table, 2, stats::sd, na.rm=TRUE)
-  rand_event_table[, 5] <- apply(re.table, 2, function(x) mean(x) - 1.960*stats::sd(x, na.rm=TRUE))
-  rand_event_table[, 6] <- apply(re.table, 2, function(x) mean(x) + 1.960*stats::sd(x, na.rm=TRUE))
-  rand_event_table[, 7] <- apply(re.table, 2, function(x) mean(x) - 2.575*stats::sd(x, na.rm=TRUE))
-  rand_event_table[, 8] <- apply(re.table, 2, function(x) mean(x) + 2.575*stats::sd(x, na.rm=TRUE))
-  rand_event_table[, 9] <- apply(re.table, 2, function(x) mean(x) - 3.294*stats::sd(x, na.rm=TRUE))
-  rand_event_table[, 10] <- apply(re.table, 2, function(x) mean(x) + 3.294*stats::sd(x, na.rm=TRUE))
-  rand_event_table[, 11] <- apply(re.table, 2, function(x) stats::quantile(x, .025, na.rm=TRUE))
-  rand_event_table[, 12] <- apply(re.table, 2, function(x) stats::quantile(x, .975, na.rm=TRUE))
-  rand_event_table[, 13] <- apply(re.table, 2, function(x) stats::quantile(x, .005, na.rm=TRUE))
-  rand_event_table[, 14] <- apply(re.table, 2, function(x) stats::quantile(x, .995, na.rm=TRUE))
-  rand_event_table[, 15] <- apply(re.table, 2, min, na.rm=TRUE)
-  rand_event_table[, 16] <- apply(re.table, 2, max, na.rm=TRUE)
-  rand_event_table <- round(rand_event_table, 3)
-
-  # Departure table
-
-  departure_table <- out_table[, -c(3, 4, 15, 16)]
-  departure_table[, 2] <- key_event_table[, 2] - rand_event_table[, 2]
-  departure_table[, 3] <- apply(re.table, 2, function(x) -1 * 1.960 * stats::sd(x, na.rm = TRUE))
-  departure_table[, 4] <- apply(re.table, 2, function(x)      1.960 * stats::sd(x, na.rm = TRUE))
-  departure_table[, 5] <- apply(re.table, 2, function(x) -1 * 2.575 * stats::sd(x, na.rm = TRUE))
-  departure_table[, 6] <- apply(re.table, 2, function(x)      2.575 * stats::sd(x, na.rm = TRUE))
-  departure_table[, 7] <- apply(re.table, 2, function(x) -1 * 3.294 * stats::sd(x, na.rm = TRUE))
-  departure_table[, 8] <- apply(re.table, 2, function(x)      3.294 * stats::sd(x, na.rm = TRUE))
-  temp <- apply(re.table, 2, function(x) stats::median(x))  #Simulated medians
-  departure_table[, 9] <- rand_event_table[, 11] - temp
-  departure_table[, 10] <- rand_event_table[, 12] - temp
-  departure_table[, 11] <- rand_event_table[, 13] - temp
-  departure_table[, 12] <- rand_event_table[, 14] - temp
-  rm(temp)
-  departure_table <- round(departure_table, 3)
-
-  out_list <- list("Actual events" = key_event_table, "Simulated events" = rand_event_table,
-                   "Departures of actual from simulated" = departure_table)
-
-  prnt.tbl <- data.frame(lag = departure_table$lag_year,
-                         departure = departure_table$mean_value,
-                         sig = paste(ifelse(departure_table$mean_value < departure_table$lower_95_perc |
-                                              departure_table$mean_value > departure_table$upper_95_perc, '*', ''),
-                                     ifelse(departure_table$mean_value < departure_table$lower_99_perc |
-                                              departure_table$mean_value > departure_table$upper_99_perc, '**', ''),
-                                     sep=''))
-  print(prnt.tbl)
-
-  return(out_list)
-}
-
 #' Calculate the sample depth of an fhx object
 #'
 #' @param a An fhx object.
@@ -349,7 +146,7 @@ run_sea <- function(x, key, years_before=6, years_after=4,
 #'
 #' @export
 #'
-sample_depth <- function(a){
+sample_depth <- function(a) {
   stopifnot('fhx' %in% class(a))
   x <- series_stats(a)
   n.trees <- nrow(x)
@@ -364,3 +161,97 @@ sample_depth <- function(a){
   out <- subset(aa, select=c('year', 'samp_depth'))
   out
 }
+
+#' Summary of `fhx` object
+#'
+#' @param object An fhx object.
+#' @param ... Additional arguments.
+#'
+#' @return A summary.fhx object.
+#'
+#' @export
+summary.fhx <- function(object, ...) {
+  out <-list(number_series = length(series_names(object)),
+             first_year = first_year(object),
+             last_year = last_year(object),
+             number_scars = count_scar(object),
+             number_injuries = count_injury(object))
+  class(out) <- 'summary.fhx'
+  out
+}
+
+#' Generate site-level summary statistics
+#'
+#' @param x An fhx object
+#' @param site_name Three character site code, defaults to "XXX"
+#' @param year_range Delimits the analysis period. For example, \code{c(1600, 1900)}.
+#' @param filter_prop An optional argument if the user chooses to include a composite rug in their plot. This is passed to \code{composite}. See this function for details.
+#' @param filter_min_rec An optional argument if the user chooses to include a composite rug in their plot. This is passed to \code{composite}. See this function for details.
+#' @param filter_min_events An optional argument if the user chooses to include a composite rug in their plot. This is passed to \code{composite}. See this function for details.
+#' @param injury_event Boolean indicating whether injuries should be considered recorders. This is passed to \code{composite}. See this function for details.
+#'
+#' @details This function produces a summary table for any fhx object. The statistics it includes are shared by other popular fire history software such as FHX2 and FHAES.
+#' @return A data.frame of summary statistics
+#' @export
+
+site_stats <- function(x, site_name = 'XXX', year_range = NULL, filter_prop = 0.25, filter_min_rec = 2,
+                        filter_min_events = 1, injury_event = FALSE) {
+
+  stopifnot(is.fhx(x))
+  sumNames <- c('number_series', 'first_year', 'last_year', 'first_event', 'last_event',
+                'number_intervals', 'mean_interval', 'median_interval',
+                'standard_dev', 'coef_var', 'min_interval', 'max_interval',
+                'weibull_shape', 'weibull_scale', 'weibull_mean',
+                'weibull_median', 'weibull_mode', 'KS_d', 'pval', 'lower_exceedance',
+                'upper_exceedance')
+  site.stats <- data.frame(variable = sumNames, site = NA)
+  names(site.stats)[2] <- site_name
+  # Perform site composite for interval stats
+  if (!is.null(year_range)) {
+    x <- x[x$year >= min(year_range) & x$year <= max(year_range), ]
+  }
+  x.comp <- composite(x, filter_prop = filter_prop, filter_min_rec = filter_min_rec,
+                          filter_min_events = filter_min_events, injury_event = injury_event)
+  intervals <- diff(get_event_years(x.comp)[[1]])
+  if(length(intervals) < 2)
+    stop("Too few fire intervals to compute a summary")
+  # Weibull fit
+  ft.r <- MASS::fitdistr(intervals, "weibull")
+  shape <- as.numeric(ft.r$estimate[1])
+  scale <- as.numeric(ft.r$estimate[2])
+  weib.quants <- stats::qweibull(c(.125, .5, .875), shape=shape, scale=scale)
+  # gf <- suppressWarnings( stats::ks.test(intervals, y=stats::pweibull, shape=shape, scale=scale, alternative='less'))
+  gf <- stats::ks.test(intervals, y=stats::pweibull, shape=shape, scale=scale, alternative='less')
+  # Fill out summary table
+  site.stats['number_trees', ] <- length(levels(x$series))
+  site.stats['first_year', ] <- first_year(x)
+  site.stats['last_year', ] <- last_year(x)
+  if (injury_event == FALSE) {
+    site.stats['first_event', ] <- min(x[grep('fs', x$rec_type), ]$year)
+    site.stats['last_event', ] <- max(x[grep('fs', x$rec_type), ]$year)
+  }
+  else {
+    site.stats['first_event', ] <- min(min(x[grep('fs', x$rec_type), ]$year),
+                                       min(x[grep('fi', x$rec_type), ]$year))
+    site.stats['last_event', ] <- max(max(x[grep('fs', x$rec_type), ]$year),
+                                      max(x[grep('fi', x$rec_type), ]$year))
+  }
+  site.stats['number_intervals', ] <- length(intervals)
+  site.stats['mean_interval', ] <- round(mean(intervals), 1)
+  site.stats['median_interval', ] <- round(stats::median(intervals), 1)
+  site.stats['standard_dev', ] <- round(stats::sd(intervals), 2)
+  site.stats['coef_var', ] <- round(stats::sd(intervals)/mean(intervals), 2)
+  site.stats['min_interval', ] <- min(intervals)
+  site.stats['max_interval', ] <- max(intervals)
+  site.stats['weibull_shape', ] <- round(shape, 2)
+  site.stats['weibull_scale', ] <- round(scale, 2)
+  site.stats['weibull_mean', ] <- round(scale * gamma(1 + 1/shape), 2)
+  site.stats['weibull_median', ] <- round(weib.quants[2], 2)
+  site.stats['weibull_mode', ] <- round(scale * ((shape-1)/shape)^(1/shape), 2)
+  site.stats['KS_d', ] <- round(gf$statistic, 2)
+  site.stats['pval', ] <- round(gf$p.value, 2)
+  site.stats['lower_exceedance', ] <- round(weib.quants[1], 2)
+  site.stats['upper_exceedance', ] <- round(weib.quants[3], 2)
+  return(site.stats)
+}
+
