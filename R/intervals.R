@@ -35,8 +35,8 @@ intervals <- function(comp, densfun="weibull") {
   x$fitdistr <- MASS::fitdistr(x$intervals, densfun)
   x$densfun <- densfun
   p_densfun <- dens2cum[[densfun]]
-  kstest_args <-c(list(x = x$intervals, y = p_densfun, alternative = "less"), 
-                  x$fitdistr$estimate) 
+  kstest_args <-c(list(x = x$intervals, y = p_densfun), 
+                  x$fitdistr$estimate)
   x$kstest <- do.call(stats::ks.test, kstest_args)
   x$shapirotest <- stats::shapiro.test(x$intervals)
   x$comp_name <- series_names(comp)
@@ -176,6 +176,10 @@ plot_intervals_dist <- function(x, binwidth=NULL) {
 print.intervals <- function(x, ...) {
   #ans_sum <- format(rbind(mean(x), median(x), sd(x)), digits = 2, justify = 'right')
   #dimnames(ans_sum) <- list(c('mean', 'median', 'sd'), "")
+
+  wfit <- MASS::fitdistr(x$intervals, "weibull")
+  weibull_median <- wfit$estimate['scale'] * log(2) ^(1 / wfit$estimate['shape'])
+
   quants <- quantile(x, q = c(0.847, 0.5, 0.125))
   cat(strwrap("Interval Analysis", prefix = "\t"), sep = "\n")
   cat(strwrap("=================", prefix = "\t"), sep = "\n")
@@ -186,6 +190,7 @@ print.intervals <- function(x, ...) {
   cat(paste0("\tTotal intervals: ", length(x$intervals), "\n"))
   cat(paste0("\tMean interval: ", round(mean(x), 1), "\n"))
   cat(paste0("\tMedian interval: ", round(median(x), 1), "\n"))
+  cat(paste0("\tWeibull median: ", round(weibull_median, 1), "\n"))
   cat(paste0("\tStandard deviation: ", round(stats::sd(x$intervals), 1), "\n"))
   cat(paste0("\tMinimum interval: ", min(x), "\n"))
   cat(paste0("\tMaximum interval: ", max(x), "\n"))
@@ -224,8 +229,8 @@ print.intervals <- function(x, ...) {
   cat(strwrap(strrep("-", nchar(x$kstest$method))), sep = "\n")
   cat("\n")
   cat(paste0("D^- = ", round(x$kstest$statistic, 5), ", p = ", round(x$kstest$p.value, 5), "\n"))
-  cat(strwrap("Null hypothesis: The intervals were sampled from the fit theoretical distribution.", exdent = 4), sep = "\n")
-  cat(strwrap("Alt. hypothesis: The intervals distribution lies below the fit theoretical distribution.", exdent = 4), sep = "\n")
+  cat(strwrap("Null hypothesis: The intervals were sampled from the theoretical distribution.", exdent = 4), sep = "\n")
+  cat(strwrap("Alt. hypothesis: The intervals were not sampled from the theoretical distribution.", exdent = 4), sep = "\n")
   cat("\n\n")
   
   invisible(x)
