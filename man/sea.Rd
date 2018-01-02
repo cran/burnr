@@ -33,7 +33,7 @@ Perform superposed epoch analysis.
 \details{
 Superposed epoch analysis (SEA) helps to evaluate fire-climate
 relationships in studies of tree-ring fire history. It works by compositing the values of
-an anual timeseries or climate reconstruction for the fire years provided (\code{key}) and both positive and
+an annual timeseries or climate reconstruction for the fire years provided (\code{key}) and both positive and
 negative lag years. Bootstrap resampling of the timeseries is performed to evaluate the statistical
 significance of each year's mean value. Users interpret the departure of the actual event year
 means from the simulated event year means.
@@ -46,7 +46,7 @@ specifically. EVENT was incorporated in the FHX2 software by Henri Grissino-Maye
 
 sea was designed to replicate EVENT as closely as possible. We have tried to stay true to their implementation of
 SEA, although multiple versions of the analysis exist in the climate literature and for fire
-history (e.g., FHAES implements a diferent procedure). The outcome of EVENT and sea should
+history (e.g., FHAES implements a different procedure). The outcome of EVENT and sea should
 only differ slightly in the values of the simulated events and the departures, because random
 draws are used. The event year and lag significance levels should match, at least in the general
 pattern.
@@ -74,7 +74,7 @@ Baisan and Swetnam 1990, Fire history on desert mountain range: Rincon Mountain 
 
 Bunn 2008, A dendrochronology program library in R (dplR), Dendrochronologia 26:115-124
 
-Holmes and Swetnam 1994, EVENT program desription
+Holmes and Swetnam 1994, EVENT program description
 
 Swetnam 1993, Fire history and climate change in giant sequoia groves, Science 262:885-889.
 }

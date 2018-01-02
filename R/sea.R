@@ -12,7 +12,7 @@
 #'
 #' @details Superposed epoch analysis (SEA) helps to evaluate fire-climate
 #' relationships in studies of tree-ring fire history. It works by compositing the values of
-#' an anual time series or climate reconstruction for the fire years provided (\code{key}) and both positive and
+#' an annual time series or climate reconstruction for the fire years provided (\code{key}) and both positive and
 #' negative lag years. Bootstrap resampling of the timeseries is performed to evaluate the statistical
 #' significance of each year's mean value. Users interpret the departure of the actual event year
 #' means from the simulated event year means.
@@ -25,7 +25,7 @@
 #'
 #' run_sea was designed to replicate EVENT as closely as possible. We have tried to stay true to their implementation of
 #' SEA, although multiple versions of the analysis exist in the climate literature and for fire
-#' history (e.g., FHAES implements a diferent procedure). The outcome of EVENT and run_sea should
+#' history (e.g., FHAES implements a different procedure). The outcome of EVENT and run_sea should
 #' only differ slightly in the values of the simulated events and the departures, because random
 #' draws are used. The event year and lag significance levels should match, at least in the general
 #' pattern.
@@ -38,7 +38,7 @@
 #'
 #' @references Baisan and Swetnam 1990, Fire history on desert mountain range: Rincon Mountain Wilderness, Arizona, U.S.A. Canadian Journal of Forest Research 20:1559-1569.
 #' @references Bunn 2008, A dendrochronology program library in R (dplR), Dendrochronologia 26:115-124
-#' @references Holmes and Swetnam 1994, EVENT program desription
+#' @references Holmes and Swetnam 1994, EVENT program description
 #' @references Swetnam 1993, Fire history and climate change in giant sequoia groves, Science 262:885-889.
 #'
 #' @examples
@@ -103,7 +103,7 @@ run_sea <- function(x, key, years_before=6, years_after=4,
 #'
 #' @details Superposed epoch analysis (SEA) helps to evaluate fire-climate
 #' relationships in studies of tree-ring fire history. It works by compositing the values of
-#' an anual timeseries or climate reconstruction for the fire years provided (\code{key}) and both positive and
+#' an annual timeseries or climate reconstruction for the fire years provided (\code{key}) and both positive and
 #' negative lag years. Bootstrap resampling of the timeseries is performed to evaluate the statistical
 #' significance of each year's mean value. Users interpret the departure of the actual event year
 #' means from the simulated event year means.
@@ -116,7 +116,7 @@ run_sea <- function(x, key, years_before=6, years_after=4,
 #'
 #' sea was designed to replicate EVENT as closely as possible. We have tried to stay true to their implementation of
 #' SEA, although multiple versions of the analysis exist in the climate literature and for fire
-#' history (e.g., FHAES implements a diferent procedure). The outcome of EVENT and sea should
+#' history (e.g., FHAES implements a different procedure). The outcome of EVENT and sea should
 #' only differ slightly in the values of the simulated events and the departures, because random
 #' draws are used. The event year and lag significance levels should match, at least in the general
 #' pattern.
@@ -129,7 +129,7 @@ run_sea <- function(x, key, years_before=6, years_after=4,
 #'
 #' @references Baisan and Swetnam 1990, Fire history on desert mountain range: Rincon Mountain Wilderness, Arizona, U.S.A. Canadian Journal of Forest Research 20:1559-1569.
 #' @references Bunn 2008, A dendrochronology program library in R (dplR), Dendrochronologia 26:115-124
-#' @references Holmes and Swetnam 1994, EVENT program desription
+#' @references Holmes and Swetnam 1994, EVENT program description
 #' @references Swetnam 1993, Fire history and climate change in giant sequoia groves, Science 262:885-889.
 #'
 #' @examples
@@ -172,13 +172,21 @@ sea <- function(x, event, nbefore=6, nafter=4, event_range=TRUE, n_iter=1000) {
 
   # set up
   rnames <- as.numeric(rownames(x))
+  if (all(as.character(seq(length(rnames))) == rnames)) {
+    warning("`x` arg for `sea()` could be missing rownames - be sure that timeseries years are rownames")
+  }
   event.cut <- rnames[rnames %in% event]
+  if (length(event.cut) <= 0) {
+    stop("`x` and `event` have no shared years")
+  }
   period <- range(event.cut)
   rnames.cut <- seq(period[1], period[2])
   n <- length(event.cut)
   if (length(event.cut) != length(event)) {
-    warning(paste('One or more event-event years is outside the range of the climate series. Using', n, 'event years:', period[1], 'to', period[2],'.'),
-            call.=FALSE)
+    warning(paste('One or more event years is outside the range of the climate series. Using ',
+                  n, ' event years: ', period[1], ' to ', period[2], '.', 
+                  sep = ''),
+            call. = FALSE)
   }
   seq.n <- seq_len(n)
   m <- nbefore + nafter + 1
@@ -341,8 +349,8 @@ print.sea <- function(x, ...) {
   prnt_tbl <- data.frame(lag = x$departure$lag,
                          upper95 = x$departure$upper_95_perc,
                          lower95 = x$departure$lower_95_perc,
-                         upper99 = x$departure$upper_95_perc,
-                         lower99 = x$departure$lower_95_perc,
+                         upper99 = x$departure$upper_99_perc,
+                         lower99 = x$departure$lower_99_perc,
                          departure = x$departure$mean)
   # prnt_tbl$sig <- ifelse(x$departure$mean < x$departure$lower_95_perc | x$departure$mean > x$departure$upper_95_perc, ".", " ")
   prnt_tbl$sig <- " "
