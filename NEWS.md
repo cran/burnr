@@ -1,3 +1,16 @@
+# burnr v0.3.0
+
+Changes in this minor release:
+
+* Change to `sea` objects, added `event_years`.
+
+* Added function `percent_scarred()` for calculating timeseries of number trees recording, scarred, and the percentage.
+
+* Update to `sample_depth()` to account for single-series fhx objects
+
+* Several updates to documentation, including citation.
+
+
 # burnr v0.2.2
 
 Changes in this patch:
