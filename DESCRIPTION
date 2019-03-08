@@ -1,6 +1,6 @@
 Package: burnr
 Title: Fire-History Analysis in R
-Version: 0.3.0
+Version: 0.3.1
 Authors@R: c(
   person("Steven", "Malevich", email = "malevich@email.arizona.edu", role = c("aut", "cre")),
   person("Christopher", "Guiterman", role = c("ctb")),
@@ -14,13 +14,13 @@ Encoding: UTF-8
 LazyData: true
 Suggests: testthat, knitr, rmarkdown
 Imports: MASS, stats, ggplot2, reshape2, plyr
-RoxygenNote: 6.1.0
+RoxygenNote: 6.1.1
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2019-01-07 19:20:31 UTC; sbm
+Packaged: 2019-03-08 18:17:20 UTC; sbm
 Author: Steven Malevich [aut, cre],
   Christopher Guiterman [ctb],
   Ellis Margolis [ctb]
 Maintainer: Steven Malevich <malevich@email.arizona.edu>
 Repository: CRAN
-Date/Publication: 2019-01-07 20:10:03 UTC
+Date/Publication: 2019-03-08 18:52:50 UTC

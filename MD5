@@ -1,6 +1,6 @@
-78d49e1a87fb8bb68fd79eaea915bac4 *DESCRIPTION
+06acca57e627afca5f078bd658c1e020 *DESCRIPTION
 62d51a371e1b7d5068584ae2d2b53397 *NAMESPACE
-cde496efdcb605400ee28ce840c2d15d *NEWS.md
+f678d1f148556117eaddac10bde97a1d *NEWS.md
 f0935eafdcc37f46e6e83f15b5a3a159 *R/data.R
 7d68351a22922a3f230eb264835a0198 *R/intervals.R
 04e155c64650f049dbacdf2e198c9bdc *R/io.R
@@ -8,7 +8,7 @@ cd228e80392062084ef5ffe24c0c2728 *R/plotting.R
 86e303dacdd05b576bd42d1cccc0dabd *R/sea.R
 c45ffa3599e6431193c237faadaf46b5 *R/stats.R
 15954e8b4af690ada739e92c554c542a *R/utils.R
-ad5dff1a98d5215976ef269457a590ac *README.md
+5a4ad0ffb185defb1e19e343ed29dc71 *README.md
 53d058d0f78add8a42ec1a9a69cdb0e6 *build/vignette.rds
 ff000012c9041424d47bd435a0972899 *data/lgr2.rda
 cc82a15f3a9f0562f9982ac14b832339 *data/lgr2_meta.rda
@@ -16,8 +16,8 @@ cc82a15f3a9f0562f9982ac14b832339 *data/lgr2_meta.rda
 09777defadc7fd12dec2d20d74024fa0 *data/pgm_meta.rda
 914a6d581678203f08e0ae3ab321b0d3 *data/pgm_pdsi.rda
 c24a38b5718ce084bc128963e3163343 *inst/doc/introduction.R
-a09b9de65e56845888f526aedcd896b2 *inst/doc/introduction.Rmd
-9c475c121075529f0876044f5e624010 *inst/doc/introduction.html
+55fb82e8763306a71ab2a90b65bbc57d *inst/doc/introduction.Rmd
+fcc4384fd366444ed74d041e8e2ddcde *inst/doc/introduction.html
 a143ea4518f1c0dbf03a350fce045a9c *man/check_duplicates.Rd
 b8321663df8286f5d713d297bc08b4e7 *man/composite.Rd
 dc31835b73c60a8eb9d1f25c01242e34 *man/count_event_position.Rd
@@ -79,7 +79,7 @@ bf88ddff10b2efd6bc2e2157ab40f0d5 *tests/testthat.R
 46b284161955b8f28b23beabf5701593 *tests/testthat/test-empty.R
 e38a2c7be89b526671b9a98b051702b1 *tests/testthat/test-intervals.R
 6fd4fe435aae25e8f17f7d6fdb4fcac1 *tests/testthat/test-io.R
-e583cb03f1bfcf5dd9ba0e99136d1f89 *tests/testthat/test-sea.R
+34055254e7922f0efee2f92235b60ceb *tests/testthat/test-sea.R
 3aa76b18384cefc5ac11451bba31bb67 *tests/testthat/test-stats.R
 2b9ec03f781138047246e316765c1d2c *tests/testthat/test-utils.R
-a09b9de65e56845888f526aedcd896b2 *vignettes/introduction.Rmd
+55fb82e8763306a71ab2a90b65bbc57d *vignettes/introduction.Rmd
