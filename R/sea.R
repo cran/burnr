@@ -34,8 +34,8 @@ run_sea <- function(x, key, years_before=6, years_after=4,
 #'
 #' @details Superposed epoch analysis (SEA) helps to evaluate fire-climate
 #' relationships in studies of tree-ring fire history. It works by compositing the values of
-#' an annual timeseries or climate reconstruction for the fire years provided (\code{key}) and both positive and
-#' negative lag years. Bootstrap resampling of the timeseries is performed to evaluate the statistical
+#' an annual time series or climate reconstruction for the fire years provided (\code{key}) and both positive and
+#' negative lag years. Bootstrap resampling of the time series is performed to evaluate the statistical
 #' significance of each year's mean value. Users interpret the departure of the actual event year
 #' means from the simulated event year means. Note that there is no rescaling of the climate time series 'x'.
 #'
@@ -69,33 +69,24 @@ run_sea <- function(x, key, years_before=6, years_after=4,
 #' \dontrun{
 #' # Read in the Cook and Krusic (2004; The North American Drought Atlas) reconstruction
 #' # of Palmer Drought Severity Index (PDSI) for the Jemez Mountains area (gridpoint 133).
-# ' target_url <- paste0('http://iridl.ldeo.columbia.edu',
-# '                      '/SOURCES/.LDEO/.TRL/.NADA2004',
-# '                      '/pdsiatlashtml/pdsiwebdata/1050w_350n_133.txt')
-# ' pdsi <- read.table(target_url, header = TRUE, row.names = 1)
-# ' pdsi <- subset(pdsi, select = "RECON")
-# '
-# ' # Run SEA on Peggy Mesa (pgm) data
-# ' data(pgm)
-# ' pgm_comp <- composite(pgm)
-# '
-# ' pgm_sea <- sea(pdsi, pgm_comp)
-# '
-# ' # See basic results:
-# ' print(pgm_sea)
-# '
-# ' # Basic plot:
-# ' plot(pgm_sea)
-#' }
-#' \dontrun{
-#' # For users who want to perform SEA very near to EVENT.exe and/or have reproducable draws from
-#' # the bootstrap procedure, consider including the \code{set.seed} function prior to \code{run_sea}.
-#' # Convention is to provide a long integer, such as a birthday (e.g. 3191982).
-#' # In the EVENT.exe program, Richard Holmes used the number of days since 1 January 1935.
-#' days <- as.numeric(Sys.Date() - as.Date("1jan1935", "%d%b%Y"))
-#' set.seed(days)
-#' }
+#' target_url <- paste0('http://iridl.ldeo.columbia.edu',
+#'                      '/SOURCES/.LDEO/.TRL/.NADA2004',
+#'                      '/pdsiatlashtml/pdsiwebdata/1050w_350n_133.txt')
+#' pdsi <- read.table(target_url, header = TRUE, row.names = 1)
+#' pdsi <- subset(pdsi, select = "RECON")
 #'
+#' # Run SEA on Peggy Mesa (pgm) data
+#' data(pgm)
+#' pgm_comp <- composite(pgm)
+#'
+#' pgm_sea <- sea(pdsi, pgm_comp)
+#'
+#' # See basic results:
+#' print(pgm_sea)
+#'
+#' # Basic plot:
+#' plot(pgm_sea)
+#' }
 #' @export
 sea <- function(x, event, nbefore=6, nafter=4, event_range=TRUE, n_iter=1000) {
   if (is.fhx(event)){
@@ -106,7 +97,7 @@ sea <- function(x, event, nbefore=6, nafter=4, event_range=TRUE, n_iter=1000) {
   # set up
   rnames <- as.numeric(rownames(x))
   if (all(as.character(seq(length(rnames))) == rnames)) {
-    warning("`x` arg for `sea()` could be missing rownames - be sure that timeseries years are rownames")
+    warning("`x` arg for `sea()` could be missing rownames - be sure that time series years are rownames")
   }
   event.cut <- rnames[rnames %in% event]
   if (length(event.cut) <= 0) {

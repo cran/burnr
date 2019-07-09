@@ -1,3 +1,14 @@
+# burnr v0.4.0
+
+Changes in this minor release:
+
+* `read_fhx()` is more tolerant of extra whitespace in series names. Thanks to Chris Guiterman for adding this.
+
+* Fixed documentation examples not rendering for `sea()` (Issue #125).
+
+* Minor argument clarification in `composite()` documentation (Issue #127).
+
+
 # burnr v0.3.1
 
 Changes in this patch:
@@ -13,7 +24,7 @@ Changes in this minor release:
 
 * Change to `sea` objects, added `event_years`.
 
-* Added function `percent_scarred()` for calculating timeseries of number trees recording, scarred, and the percentage.
+* Added function `percent_scarred()` for calculating time series of number trees recording, scarred, and the percentage.
 
 * Update to `sample_depth()` to account for single-series fhx objects
 
@@ -58,7 +69,7 @@ Changes in this minor release:
 
 * Added `year_range()` to give (min, max) years for an `fhx` object.
 
-* Updated `composite()` to include a filter for number of events. This necesitates fixes in other functions (e.g. `plot_demograph()`).
+* Updated `composite()` to include a filter for number of events. This necessitates fixes in other functions (e.g. `plot_demograph()`).
 
 * Added `summary()` function for fhx and intervals objects.
 
@@ -149,7 +160,7 @@ Changes in this patch:
 
 * In `get_ggplot()` the `legend` argument is now `plot_legend` to avoid clash with common functions.
 
-* In `fhx$rings` and all functions, `type` arugment is now `rec_type` to avoid clash with `type` function. `rec_type` is short for "record_type".
+* In `fhx$rings` and all functions, `type` argument is now `rec_type` to avoid clash with `type` function. `rec_type` is short for "record_type".
 
 * Can now read FHX files with a single series (closes bug #43).
 

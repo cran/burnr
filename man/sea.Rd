@@ -34,8 +34,8 @@ Perform superposed epoch analysis.
 \details{
 Superposed epoch analysis (SEA) helps to evaluate fire-climate
 relationships in studies of tree-ring fire history. It works by compositing the values of
-an annual timeseries or climate reconstruction for the fire years provided (\code{key}) and both positive and
-negative lag years. Bootstrap resampling of the timeseries is performed to evaluate the statistical
+an annual time series or climate reconstruction for the fire years provided (\code{key}) and both positive and
+negative lag years. Bootstrap resampling of the time series is performed to evaluate the statistical
 significance of each year's mean value. Users interpret the departure of the actual event year
 means from the simulated event year means. Note that there is no rescaling of the climate time series 'x'.
 
@@ -60,16 +60,24 @@ the bootstrap procedure, but differs in the kind of output provided for the user
 \dontrun{
 # Read in the Cook and Krusic (2004; The North American Drought Atlas) reconstruction
 # of Palmer Drought Severity Index (PDSI) for the Jemez Mountains area (gridpoint 133).
-}
-\dontrun{
-# For users who want to perform SEA very near to EVENT.exe and/or have reproducable draws from
-# the bootstrap procedure, consider including the \\code{set.seed} function prior to \\code{run_sea}.
-# Convention is to provide a long integer, such as a birthday (e.g. 3191982).
-# In the EVENT.exe program, Richard Holmes used the number of days since 1 January 1935.
-days <- as.numeric(Sys.Date() - as.Date("1jan1935", "\%d\%b\%Y"))
-set.seed(days)
-}
+target_url <- paste0('http://iridl.ldeo.columbia.edu',
+                     '/SOURCES/.LDEO/.TRL/.NADA2004',
+                     '/pdsiatlashtml/pdsiwebdata/1050w_350n_133.txt')
+pdsi <- read.table(target_url, header = TRUE, row.names = 1)
+pdsi <- subset(pdsi, select = "RECON")
 
+# Run SEA on Peggy Mesa (pgm) data
+data(pgm)
+pgm_comp <- composite(pgm)
+
+pgm_sea <- sea(pdsi, pgm_comp)
+
+# See basic results:
+print(pgm_sea)
+
+# Basic plot:
+plot(pgm_sea)
+}
 }
 \references{
 Baisan and Swetnam 1990, Fire history on desert mountain range: Rincon Mountain Wilderness, Arizona, U.S.A. Canadian Journal of Forest Research 20:1559-1569.
