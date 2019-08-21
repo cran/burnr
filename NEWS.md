@@ -1,3 +1,30 @@
+# burnr v0.5.0
+
+Changes in this release:
+
+* Added `as_fhx()` (Issue #120). This takes data frames, tibbles, and lists as input. It assumes they have "year", "series", and "rec_type" elements/columns. It returns an `fhx` object. Additionally, the `fhx()` constructor now also uses type casting for input (Issue #150) - so no more worrying if your `rec_types` are factors or character vectors. These changes are a big improvement for anyone working in the tidyverse or anyone working with thier own non-FHX fire-history file formats.
+
+* Extensive improvement to documentation (e.g. Issue #145). This includes new "See Also" sections (so users can find cool functions), fixes for spelling errors, and clarifications to dyslexic prose.
+
+* `write_fhx()` will now throw a warning if users try to write an `fhx` object that has record types violating the FHX2 file convention (Issue #149). I still strongly recommend using `write.csv(...)` on `fhx` objects and `as.fhx(read.csv(...))` for IO with experimental `fhx` data.
+
+* Removed deprecated `run_sea()`. Be sure to use `sea()` now.
+
+* Removed deprecated `get_ggplot()`. Please use `plot_demograph()` now.
+
+* Removed broken `site_stats()` function (Issue #138). Please use `intervals()` and `print()` to get the same statistics.
+
+* `composite()` now returns an empty `fhx` object if no composite-worthy events are found (Issue #131) or if there are no fire-events (Issue #155). Much better than throwing an obtuse error, which is what we used to do.
+
+* Updated in-package citation information (`citation("burnr")`). Please cite burnr if you use it in your work!
+
+* `yearly_recording()` now returns a data frame with a numeric "year" column (Issue #154). In past versions, the "year" column contained factors.
+
+* Added unit tests for basic plotting function options. We now have test coverage for more than 75% of our code. 
+
+* Minor internal code cleanup (Issue #130, Issue #88, Issue #133, Issue #136, Issue #88, Issue #146) and code linting.
+
+
 # burnr v0.4.0
 
 Changes in this minor release:
