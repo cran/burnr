@@ -1,6 +1,6 @@
 Package: burnr
 Title: Forest Fire History Analysis
-Version: 0.6.0
+Version: 0.6.1
 Authors@R: c(
   person("Steven", "Malevich", email = "sbmalev@gmail.com", role = c("aut", "cre"), comment = c(ORCID = "0000-0002-4752-8190")),
   person("Christopher", "Guiterman", role = c("aut", "ctb"), comment = c(ORCID = "0000-0002-9706-9332")),
@@ -15,14 +15,14 @@ LazyData: true
 Suggests: testthat, knitr, rmarkdown
 Imports: forcats, ggplot2, MASS, plyr, reshape2, rlang, stats, stringr,
         tidyr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2021-03-10 02:13:25 UTC; sbm
+Packaged: 2022-03-01 05:53:08 UTC; sbm
 Author: Steven Malevich [aut, cre] (<https://orcid.org/0000-0002-4752-8190>),
   Christopher Guiterman [aut, ctb]
     (<https://orcid.org/0000-0002-9706-9332>),
   Ellis Margolis [aut] (<https://orcid.org/0000-0002-0595-9005>)
 Maintainer: Steven Malevich <sbmalev@gmail.com>
 Repository: CRAN
-Date/Publication: 2021-03-10 11:00:02 UTC
+Date/Publication: 2022-03-01 10:10:06 UTC

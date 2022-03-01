@@ -1,6 +1,6 @@
-fb44fece6a10b48afde70a51f367e118 *DESCRIPTION
+0162a6ace30bfc947342ae6108d925d0 *DESCRIPTION
 8bd383765a2c6aba0cfb1dd5114dc858 *NAMESPACE
-2226da4a3fb99b8cb2ad6288da995259 *NEWS.md
+56ff6a076bc920598c081a828dae55f4 *NEWS.md
 cc0bb0e2e1c6405a1c349c2fb53978e4 *R/data.R
 a18abc3523412770ed00ac4ec49246f9 *R/intervals.R
 ddfc93d13b99295be3fa72bb94333246 *R/io.R
@@ -9,8 +9,8 @@ e13f06f594d1a24ebffeb5ac411eec9e *R/plotting.R
 e789d73ebcb2cc0958a79d351d8af9ff *R/stats.R
 277212d3a8738ebf4ebf4b927d1ed35b *R/sysdata.rda
 96db9ff30e3d23bf5a2c78e3ba83ed41 *R/utils.R
-5918eea8cb413e13b40e945c4b7a62b5 *README.md
-60bf629f285d9fed4a1df3d64036eba6 *build/vignette.rds
+9a355459ba7e215b74d1cc4846bcd05c *README.md
+d6bf3c712f7e098e3ebee4b732efbf33 *build/vignette.rds
 ff000012c9041424d47bd435a0972899 *data/lgr2.rda
 cc82a15f3a9f0562f9982ac14b832339 *data/lgr2_meta.rda
 01165f02afb379956c0fc41f98be6ffe *data/pgm.rda
@@ -22,10 +22,10 @@ f2e6734f388fdbc3cce51bee48d95d2a *data/pmr.rda
 f477442a93f49b13f87953067f10a43b *inst/CITATION
 d4ea9ae3cf7b2a2855189b5ce343c7e8 *inst/doc/facet_comps.R
 760971825d936cbd03953ebc1a187592 *inst/doc/facet_comps.Rmd
-d1db2e4450b7ad514e9f5c136aeb63f0 *inst/doc/facet_comps.html
+4bc0b12585040ccdf0cebd747eecb751 *inst/doc/facet_comps.html
 ce6ab1b5b9a218161912619562f68c3a *inst/doc/introduction.R
 f0b4d5a492b3b5adf40212e9f54b3acf *inst/doc/introduction.Rmd
-c8b2d29622492efa6e4218736648f245 *inst/doc/introduction.html
+f106da54c361f74dbb01289e46075ac3 *inst/doc/introduction.html
 30578cc15cf45bde3e3325b72aec9555 *man/as.fhx.Rd
 b349c2b15858be1207a4499029735394 *man/as_fhx.Rd
 0e96cb4510f596fd81032b33a256a977 *man/composite.Rd
@@ -36,7 +36,7 @@ c65053f735e8335ec4c386e6beb2ec74 *man/count_injury.Rd
 170f05c616c3dc4656d7855fcdc6b644 *man/count_year_span.Rd
 6db1379b7063e4c62a7cd8729435a983 *man/delete.Rd
 0ceec6ceb07daa9a00f9ca2d30877cf3 *man/fhx.Rd
-4dc94d9d0c2d94e763c031d2ac855329 *man/figures/README-example-1.png
+bd8b3dc9849d565a83a2022c6d5ae33d *man/figures/README-example-1.png
 a15cd404262fc4edf7eb491eaa8c784e *man/first_year.Rd
 c2b74ecfcc7dbb5f588337aae9784868 *man/get_event_years.Rd
 be6d966d5aac00d826ca0cf631cde05b *man/get_series.Rd
@@ -87,7 +87,7 @@ f2c60bab9cedd4e4470df2a16257fa99 *man/write_fhx.Rd
 5b59cd2f3f274daa5d730fe8d3038fe4 *man/year_range.Rd
 16161be664c779c3ca2d10bcc2e90ea5 *man/yearly_recording.Rd
 bf88ddff10b2efd6bc2e2157ab40f0d5 *tests/testthat.R
-de2b37afaffb440f2b061ccf130be4b0 *tests/testthat/test-intervals.R
+c6f65b8ada2782fef18b2d0b23daa6d4 *tests/testthat/test-intervals.R
 d2f8ebfc5b275cb3ab4ff7cf4458c129 *tests/testthat/test-io.R
 a2fe3bd80e2dc79ec14442813158bddf *tests/testthat/test-plotting.R
 34efbd8f8614729750ddcb4c2cce0bb2 *tests/testthat/test-sea.R

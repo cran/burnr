@@ -8,10 +8,9 @@
 [![CRAN\_Status\_Badge](https://www.r-pkg.org/badges/version/burnr)](https://cran.r-project.org/package=burnr)
 [![Coverage
 Status](https://coveralls.io/repos/github/ltrr-arizona-edu/burnr/badge.svg?branch=master)](https://coveralls.io/github/ltrr-arizona-edu/burnr?branch=master)
-[![R build
-status](https://github.com/ltrr-arizona-edu/burnr/workflows/R-CMD-check/badge.svg)](https://github.com/ltrr-arizona-edu/burnr/actions)
+[![R-CMD-check](https://github.com/ltrr-arizona-edu/burnr/workflows/R-CMD-check/badge.svg)](https://github.com/ltrr-arizona-edu/burnr/actions)
 [![downloads](https://cranlogs.r-pkg.org/badges/burnr)](https://cran.r-project.org/package=burnr)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1134832.svg)](https://doi.org/10.5281/zenodo.1134832)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.594459.svg)](https://doi.org/10.5281/zenodo.594459)
 
 <!-- badges: end -->
 
@@ -59,11 +58,14 @@ plot(lgr2,
 Documentation is included in the code. If you’re new to `burnr`, our
 [2018 paper in
 Dendrochronologia](https://doi.org/10.1016/j.dendro.2018.02.005) is a
-nice survey of the package with many examples. We have also an
-[introduction](https://cran.r-project.org/package=burnr/vignettes/introduction.html).
-More information can be found on the [project’s
-wiki](https://github.com/ltrr-arizona-edu/burnr/wiki). Note, this is
-still under construction.
+nice survey of the package with many examples. We also have
+instructional vignettes on the project website,
+<https://ltrr-arizona-edu.github.io/burnr/>. And you can work through
+examples, with included data, in an R project hosted by @chguiterman on
+GitHub: <https://github.com/chguiterman/burnr_demo>. We’re working to
+enhance our instruction and add to these demos on the burnr website, so
+please send us requests for new tips and tricks, or create your own and
+share with us\!
 
 ## Citation
 

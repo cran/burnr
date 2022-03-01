@@ -1,3 +1,12 @@
+# burnr v0.6.1
+
+Changes in this release:
+
+* Test for new ks.test behavior in r-devel. (@brews, PR #191)
+
+* Update DOI badge and support documentation on main website and README. (@chguiterman, PR #182)
+
+
 # burnr v0.6.0
 
 Changes in this release:
